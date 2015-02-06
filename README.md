@@ -103,7 +103,12 @@ Files will be available on Package via `this.files` attribute.
 
 Runtime variables will be available on Package via `this.runtime` attribute.
 
-- **`Builder.prototype.zipTo( target, callback )`**
+- **`Builder.prototype.toJson( callback )`**
+
+**callback** *Function* called with two arguments: null or an Error object and the built files
+object.
+
+- **`Builder.prototype.toZip( target, callback )`**
 
 **target** *Stream/String* The target stream, or the target filename (when string).
 
