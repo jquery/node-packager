@@ -107,6 +107,29 @@ describe( "Package", function() {
 				expect( builtFiles[ "output/qux/quux" ] ).to.equal( "quux" );
 			});
 		});
+
+		describe( "Returning null", function() {
+			var builtFiles;
+			function Package() {}
+			Package.prototype.output = function() {
+				return null;
+			};
+
+			before(function( done ) {
+				var builder = new Builder( files, Package );
+				builder.toJson(function( error, _builtFiles ) {
+					if ( error ) {
+						done( error );
+					}
+					builtFiles = _builtFiles;
+					done();
+				});
+			});
+
+			it( "should work", function() {
+				expect( builtFiles ).to.not.contain.keys( "output" );
+			});
+		});
 	});
 
 	describe( "Async method for async processed output", function() {
@@ -137,7 +160,7 @@ describe( "Package", function() {
 			});
 		});
 
-		describe( "Returning a String", function() {
+		describe( "Returning a String to skip an entrypoint", function() {
 			var builtFiles;
 			function Package() {}
 			Package.prototype.output = function( callback ) {
@@ -187,10 +210,38 @@ describe( "Package", function() {
 				});
 			});
 
-			it( "should work", function() {
+			it( "should work to skip an entrypoint", function() {
 				expect( builtFiles ).to.contain.keys( "output/baz", "output/qux/quux" );
 				expect( builtFiles[ "output/baz" ] ).to.equal( "baz" );
 				expect( builtFiles[ "output/qux/quux" ] ).to.equal( "quux" );
+			});
+		});
+
+		describe( "Returning null", function() {
+			var builtFiles;
+			function Package() {}
+			Package.prototype.output = function() {
+				return null;
+			};
+			Package.prototype.output = function( callback ) {
+				setTimeout(function() {
+					callback( null, null );
+				}, 100);
+			};
+
+			before(function( done ) {
+				var builder = new Builder( files, Package );
+				builder.toJson(function( error, _builtFiles ) {
+					if ( error ) {
+						done( error );
+					}
+					builtFiles = _builtFiles;
+					done();
+				});
+			});
+
+			it( "should work", function() {
+				expect( builtFiles ).to.not.contain.keys( "output" );
 			});
 		});
 	});

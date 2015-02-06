@@ -13,10 +13,14 @@ function set( files, filepath, data ) {
 		files[ filepath ] = data;
 
 	// Object containing (subpath, data) key-value pairs.
-	} else if ( typeof data === "object" ) {
+	} else if ( typeof data === "object" && data !== null ) {
 		Object.keys( data ).forEach(function( subpath ) {
 			set( files, path.join( filepath, subpath ), data[ subpath ] );
 		});
+
+	// null
+	} else if ( data === null ) {
+		return;
 	} else {
 		throw new Error( "Invalid type `" + typeof data + "` for `" + filepath + "` (String, Buffer or Object expected)." );
 	}
