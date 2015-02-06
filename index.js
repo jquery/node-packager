@@ -33,7 +33,7 @@ function Builder( files, Package, runtimeVars ) {
 	assert( typeof files === "object", "Must include files object" );
 	assert( typeof Package === "function", "Must include Package class" );
 	if ( runtimeVars !== undefined ) {
-		assert( typeof Package === "object", "Invalid runtimeVars type (object expected)" );
+		assert( typeof runtimeVars === "object", "Invalid runtimeVars type (object expected)" );
 	}
 
 	runtimeVars = runtimeVars || {};
