@@ -1,6 +1,6 @@
 ## Why builder-x?
 
-Use `builder-x` to generate the built package of your library or application.
+Use `builder-x` to generate the built package for your library or application.
 
 It's ideal for applications that builds packages on the fly using [Node.js][].
 
@@ -47,14 +47,14 @@ extend( Package.prototype, {
   // Sync processing
   "app.css": function() {
 
-    // Return a String with the CSS data.
+    // Return a String or Buffer with the file data.
     return buildCss();
   },
 
   // Async processing
   "app.js": function( callback ) {
 
-    // Call `callback( error, data )`, where data is a String with the JS data.
+    // Call `callback( error, data )`, where data is a String with the file data.
     buildJs( callback );
   },
 
@@ -62,7 +62,7 @@ extend( Package.prototype, {
     var files, imagesFiles;
 
     // this.files and this.runtime are available.
-    if ( runtime.includeImages ) {
+    if ( this.runtime.includeImages ) {
       files = this.files;
       imagesFiles = {};
       Object.keys( this.files ).filter(function( filepath ) {
