@@ -135,7 +135,7 @@ Builder.prototype.toZip = function( target, callback ) {
 		}
 
 		target.on( finishEvent, function() {
-			callback( null, zip.archiver.pointer );
+			callback( null );
 		});
 
 		zip.on( "error", callback );
@@ -143,7 +143,7 @@ Builder.prototype.toZip = function( target, callback ) {
 
 		Object.keys( files ).forEach(function( filepath ) {
 			var data = files[ filepath ] || "";
-			zip.addFile( data, { name: filepath } );
+			zip.append( data, { name: filepath } );
 		});
 
 		zip.finalize();
