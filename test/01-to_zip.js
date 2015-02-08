@@ -1,5 +1,5 @@
 var files;
-var Builder = require( "../index.js" );
+var Packager = require( "../index.js" );
 var expect = require( "chai" ).expect;
 var fs = require( "fs" );
 var Package = require( "./fixtures/package" );
@@ -10,7 +10,7 @@ files = {
 };
 
 describe( "Package#toZip()", function() {
-	var builder = new Builder( files, Package );
+	var pkg = new Packager( files, Package );
 
 	it( "should generate its ZIP package (compressed content not tested)", function( done ) {
 		var somethingWritten = false;
@@ -26,7 +26,7 @@ describe( "Package#toZip()", function() {
 			expect( src._format ).to.equal( "zip" );
 		});
 
-		builder.toZip( wstream, function( error ) {
+		pkg.toZip( wstream, function( error ) {
 			expect( error ).to.be.null();
 			expect( somethingWritten ).to.be.true;
 			done();

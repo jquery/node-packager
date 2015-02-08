@@ -1,5 +1,5 @@
 var files;
-var Builder = require( "../index.js" );
+var Packager = require( "../index.js" );
 var expect = require( "chai" ).expect;
 var fs = require( "fs" );
 
@@ -16,8 +16,8 @@ describe( "Package", function() {
 		Package.prototype.output = "foo";
 
 		before(function( done ) {
-			var builder = new Builder( files, Package );
-			builder.toJson(function( error, files ) {
+			var pkg = new Packager( files, Package );
+			pkg.toJson(function( error, files ) {
 				if ( error ) {
 					done( error );
 				}
@@ -40,8 +40,8 @@ describe( "Package", function() {
 			};
 
 			before(function( done ) {
-				var builder = new Builder( files, Package );
-				builder.toJson(function( error, _builtFiles ) {
+				var pkg = new Packager( files, Package );
+				pkg.toJson(function( error, _builtFiles ) {
 					if ( error ) {
 						done( error );
 					}
@@ -64,8 +64,8 @@ describe( "Package", function() {
 			};
 
 			before(function( done ) {
-				var builder = new Builder( files, Package );
-				builder.toJson(function( error, _builtFiles ) {
+				var pkg = new Packager( files, Package );
+				pkg.toJson(function( error, _builtFiles ) {
 					if ( error ) {
 						done( error );
 					}
@@ -91,8 +91,8 @@ describe( "Package", function() {
 			};
 
 			before(function( done ) {
-				var builder = new Builder( files, Package );
-				builder.toJson(function( error, _builtFiles ) {
+				var pkg = new Packager( files, Package );
+				pkg.toJson(function( error, _builtFiles ) {
 					if ( error ) {
 						done( error );
 					}
@@ -116,8 +116,8 @@ describe( "Package", function() {
 			};
 
 			before(function( done ) {
-				var builder = new Builder( files, Package );
-				builder.toJson(function( error, _builtFiles ) {
+				var pkg = new Packager( files, Package );
+				pkg.toJson(function( error, _builtFiles ) {
 					if ( error ) {
 						done( error );
 					}
@@ -144,8 +144,8 @@ describe( "Package", function() {
 			};
 
 			before(function( done ) {
-				var builder = new Builder( files, Package );
-				builder.toJson(function( error, _builtFiles ) {
+				var pkg = new Packager( files, Package );
+				pkg.toJson(function( error, _builtFiles ) {
 					if ( error ) {
 						done( error );
 					}
@@ -171,8 +171,8 @@ describe( "Package", function() {
 			};
 
 			before(function( done ) {
-				var builder = new Builder( files, Package );
-				builder.toJson(function( error, _builtFiles ) {
+				var pkg = new Packager( files, Package );
+				pkg.toJson(function( error, _builtFiles ) {
 					if ( error ) {
 						done( error );
 					}
@@ -200,8 +200,8 @@ describe( "Package", function() {
 			};
 
 			before(function( done ) {
-				var builder = new Builder( files, Package );
-				builder.toJson(function( error, _builtFiles ) {
+				var pkg = new Packager( files, Package );
+				pkg.toJson(function( error, _builtFiles ) {
 					if ( error ) {
 						done( error );
 					}
@@ -230,8 +230,8 @@ describe( "Package", function() {
 			};
 
 			before(function( done ) {
-				var builder = new Builder( files, Package );
-				builder.toJson(function( error, _builtFiles ) {
+				var pkg = new Packager( files, Package );
+				pkg.toJson(function( error, _builtFiles ) {
 					if ( error ) {
 						done( error );
 					}

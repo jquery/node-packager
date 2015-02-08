@@ -1,6 +1,6 @@
-## Why builder-x?
+## Why node-packager?
 
-Use `builder-x` to generate the built package for your library or application.
+Use `node-packager` to generate the built package for your library or application.
 
 It's ideal for applications that builds packages on the fly using [Node.js][].
 
@@ -8,21 +8,21 @@ It's ideal for applications that builds packages on the fly using [Node.js][].
 
 ## Usage
 
-   npm install builder-x
+   npm install node-packager
 
 ```javascript
 var fs = require( "js" );
 var glob = require( "glob" );
 var extend = require( "util" )._extend;
-var Builder = require( "builder-x" );
 var Package = require( "./package" )
+var Packager = require( "node-packager" );
 
 var files = glob.sync( "+(LICENSE.txt|src/**)", { nodir: true } ).reduce(function( files, filepath ) {
   files[ filepath ] = fs.readFileSync( filepath );
   return files;
 }, {} );
 
-var builder = Builder( files, Package, {
+var builder = Packager( files, Package, {
   includeImages: true
 });
 var stream = fs.createWriteStream( "myapp.zip" );
@@ -83,7 +83,7 @@ module.exports = Package;
 
 ## API
 
-- **`Builder( files, Package [, runtimeVars] )`**
+- **`Packager( files, Package [, runtimeVars] )`**
 
 **files** *Object* containing (path, data) key-value pairs, e.g.,
 
@@ -103,12 +103,12 @@ Files will be available on Package via `this.files` attribute.
 
 Runtime variables will be available on Package via `this.runtime` attribute.
 
-- **`Builder.prototype.toJson( callback )`**
+- **`Packager.prototype.toJson( callback )`**
 
 **callback** *Function* called with two arguments: null or an Error object and the built files
 object.
 
-- **`Builder.prototype.toZip( target, callback )`**
+- **`Packager.prototype.toZip( target, callback )`**
 
 **target** *Stream/String* The target stream, or the target filename (when string).
 

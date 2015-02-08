@@ -1,10 +1,10 @@
 {
-  "name": "builder-x",
+  "name": "node-packager",
   "version": "0.0.1",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/rxaviers/builder-x.git"
+    "url": "git://github.com/rxaviers/node-packager.git"
   },
   "keywords": [
     "amd",
@@ -21,7 +21,7 @@
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/rxaviers/builder-x/blob/master/LICENSE-MIT"
+      "url": "https://github.com/rxaviers/node-packager/blob/master/LICENSE-MIT"
     }
   ],
   "dependencies": {
