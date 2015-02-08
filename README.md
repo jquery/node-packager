@@ -22,11 +22,11 @@ var files = glob.sync( "+(LICENSE.txt|src/**)", { nodir: true } ).reduce(functio
   return files;
 }, {} );
 
-var builder = Packager( files, Package, {
+var pkg = Packager( files, Package, {
   includeImages: true
 });
 var stream = fs.createWriteStream( "myapp.zip" );
-builder.zipTo( stream, function( error ) {
+pkg.zipTo( stream, function( error ) {
   if ( error ) {
     return console.error( error );
   }
