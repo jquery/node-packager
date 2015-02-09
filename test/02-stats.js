@@ -33,4 +33,8 @@ describe( "Packager#stats", function() {
 	it( "should contain time (stopwatch) statistics for Packager#toZip method", function() {
 		expect( pkg.stats.toZip.time ).to.be.a( "number" );
 	});
+
+	it( "should contain size statistics for Packager#toZip method", function() {
+		expect( pkg.stats.toZip.size ).to.be.a( "number" );
+	});
 });

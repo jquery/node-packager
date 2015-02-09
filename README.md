@@ -30,7 +30,7 @@ pkg.toZip( stream, function( error ) {
   if ( error ) {
     return console.error( error );
   }
-  console.log( "Built myapp.zip in " + pkg.stats.toZip.time + " ms" );
+  console.log( "Built myapp.zip (" + pkg.stats.toZip.size + " bytes) in " + pkg.stats.toZip.time + " ms" );
   console.log( "- app.js took " + pkg.stats[ "app.js" ].time + " ms" );
 });
 ```

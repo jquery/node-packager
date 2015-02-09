@@ -167,6 +167,8 @@ Packager.prototype.toZip = function( target, options, callback ) {
 
 		target.on( finishEvent, function() {
 			deferred.resolve();
+			stats.toZip = stats.toZip || {};
+			stats.toZip.size = zip.pointer();
 			callback( null );
 		});
 
