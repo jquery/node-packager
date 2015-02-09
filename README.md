@@ -26,7 +26,7 @@ var pkg = Packager( files, Package, {
   includeImages: true
 });
 var stream = fs.createWriteStream( "myapp.zip" );
-pkg.zipTo( stream, function( error ) {
+pkg.toZip( stream, function( error ) {
   if ( error ) {
     return console.error( error );
   }
