@@ -26,8 +26,16 @@ function set( files, filepath, data ) {
 	}
 }
 
+function stopwatch( promise, stats, name ) {
+	var start = new Date();
+	stats[ name ] = stats[ name ] || {};
+	promise.then(function() {
+		stats[ name ].time = new Date() - start;
+	});
+}
+
 function Packager( files, Package, runtimeVars ) {
-	var builtFiles, pkg;
+	var builtFiles, pkg, stats;
 	var ready = Q.defer();
 
 	assert( typeof files === "object", "Must include files object" );
@@ -39,6 +47,7 @@ function Packager( files, Package, runtimeVars ) {
 	runtimeVars = runtimeVars || {};
 
 	this.pkg = pkg = new Package( files, runtimeVars );
+  this.stats = stats = {};
 
 	assert( typeof pkg === "object", "Could not create Package instance" );
 
@@ -54,6 +63,8 @@ function Packager( files, Package, runtimeVars ) {
 		var method = pkg[ methodName ];
 
 		var type = typeof method;
+
+		stopwatch( deferred.promise, stats, filepath );
 
 		// String (builtFile is a shallow copy of file whose path has been passed).
 		if ( type === "string" ) {
@@ -121,10 +132,15 @@ Packager.prototype.toJson = function( callback ) {
  * @callback( error ) [ Function ]: callback function.
  */
 Packager.prototype.toZip = function( target, callback ) {
+	var deferred = Q.defer();
 	var files = this.builtFiles;
+	var stats = this.stats;
+
 	this.ready.then(function() {
 		var finishEvent = "finish",
 			zip = archiver( "zip" );
+
+		stopwatch( deferred.promise, stats, "toZip" );
 
 		if ( typeof target === "string" ) {
 			target = fs.createWriteStream( target );
@@ -135,6 +151,7 @@ Packager.prototype.toZip = function( target, callback ) {
 		}
 
 		target.on( finishEvent, function() {
+			deferred.resolve();
 			callback( null );
 		});
 
