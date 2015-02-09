@@ -109,9 +109,13 @@ Runtime variables will be available on Package via `this.runtime` attribute.
 **callback** *Function* called with two arguments: null or an Error object and the built files
 object.
 
-- **`Packager.prototype.toZip( target, callback )`**
+- **`Packager.prototype.toZip( target [, options], callback )`**
 
 **target** *Stream/String* The target stream, or the target filename (when string).
+
+**options** *Object*
+
+  **options.basedir** *String* Set the ZIP base directory.
 
 **callback** *Function* called when write is complete, with one argument: null or
 an Error object.

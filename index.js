@@ -125,20 +125,35 @@ Packager.prototype.toJson = function( callback ) {
 };
 
 /**
- * .toZip( target, callback )
+ * .toZip( target [, options], callback )
  *
  * @target [ Stream / String ]: The target stream, or the target filename (when string).
  *
+ * @options [ Object ]:
+ * - options.basedir: [ String ] Set the ZIP base directory.
+ *
  * @callback( error ) [ Function ]: callback function.
  */
-Packager.prototype.toZip = function( target, callback ) {
+Packager.prototype.toZip = function( target, options, callback ) {
 	var deferred = Q.defer();
 	var files = this.builtFiles;
 	var stats = this.stats;
 
+	if ( arguments.length === 2 ) {
+		callback = options;
+		options = {};
+	}
+
 	this.ready.then(function() {
 		var finishEvent = "finish",
 			zip = archiver( "zip" );
+
+		if ( options.basedir ) {
+			files = Object.keys( files ).reduce(function( _files, filepath ) {
+				_files[ path.join( options.basedir, filepath ) ] = files[ filepath ];
+				return _files;
+			}, {} );
+		}
 
 		stopwatch( deferred.promise, stats, "toZip" );
 
