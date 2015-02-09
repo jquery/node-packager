@@ -9,7 +9,7 @@ files = {
 	"bar": fs.readFileSync( __dirname + "/fixtures/bar" )
 };
 
-describe( "Package#toZip()", function() {
+describe( "Packager#toZip()", function() {
 	var pkg = new Packager( files, Package );
 
 	it( "should generate its ZIP package (compressed content not tested)", function( done ) {

@@ -26,7 +26,7 @@ function set( files, filepath, data ) {
 	}
 }
 
-function Builder( files, Package, runtimeVars ) {
+function Packager( files, Package, runtimeVars ) {
 	var builtFiles, pkg;
 	var ready = Q.defer();
 
@@ -106,7 +106,7 @@ function Builder( files, Package, runtimeVars ) {
  *
  * @callback( error ) [ Function ]: callback function.
  */
-Builder.prototype.toJson = function( callback ) {
+Packager.prototype.toJson = function( callback ) {
 	var files = this.builtFiles;
 	this.ready.then(function() {
 		callback( null, files );
@@ -120,7 +120,7 @@ Builder.prototype.toJson = function( callback ) {
  *
  * @callback( error ) [ Function ]: callback function.
  */
-Builder.prototype.toZip = function( target, callback ) {
+Packager.prototype.toZip = function( target, callback ) {
 	var files = this.builtFiles;
 	this.ready.then(function() {
 		var finishEvent = "finish",
@@ -150,4 +150,4 @@ Builder.prototype.toZip = function( target, callback ) {
 	}).catch( callback );
 };
 
-module.exports = Builder;
+module.exports = Packager;
