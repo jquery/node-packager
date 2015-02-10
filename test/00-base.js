@@ -130,6 +130,26 @@ describe( "Package", function() {
 				expect( builtFiles ).to.not.contain.keys( "output" );
 			});
 		});
+
+		describe( "Throwing an error", function() {
+			var error;
+			function Package() {}
+			Package.prototype.output = function() {
+				throw new Error( "error" );
+			};
+
+			before(function( done ) {
+				var pkg = new Packager( files, Package );
+				pkg.toJson(function( _error ) {
+					error = _error;
+					done();
+				});
+			});
+
+			it( "should work", function() {
+				expect( error ).to.be.an.instanceof( Error );
+			});
+		});
 	});
 
 	describe( "Async method for async processed output", function() {
@@ -242,6 +262,28 @@ describe( "Package", function() {
 
 			it( "should work", function() {
 				expect( builtFiles ).to.not.contain.keys( "output" );
+			});
+		});
+
+		describe( "Throwing an error", function() {
+			var error;
+			function Package() {}
+			Package.prototype.output = function( callback ) {
+				setTimeout(function() {
+					callback( new Error( "error" ) );
+				}, 100);
+			};
+
+			before(function( done ) {
+				var pkg = new Packager( files, Package );
+				pkg.toJson(function( _error ) {
+					error = _error;
+					done();
+				});
+			});
+
+			it( "should work", function() {
+				expect( error ).to.be.an.instanceof( Error );
 			});
 		});
 	});
