@@ -8,33 +8,6 @@ It's ideal for applications that builds packages on the fly using [Node.js][].
 
 ## Usage
 
-   npm install node-packager
-
-```javascript
-var fs = require( "js" );
-var glob = require( "glob" );
-var extend = require( "util" )._extend;
-var Package = require( "./package" )
-var Packager = require( "node-packager" );
-
-var files = glob.sync( "+(LICENSE.txt|src/**)", { nodir: true } ).reduce(function( files, filepath ) {
-  files[ filepath ] = fs.readFileSync( filepath );
-  return files;
-}, {} );
-
-var pkg = Packager( files, Package, {
-  includeImages: true
-});
-var stream = fs.createWriteStream( "myapp.zip" );
-pkg.toZip( stream, function( error ) {
-  if ( error ) {
-    return console.error( error );
-  }
-  console.log( "Built myapp.zip (" + pkg.stats.toZip.size + " bytes) in " + pkg.stats.toZip.time + " ms" );
-  console.log( "- app.js took " + pkg.stats[ "app.js" ].time + " ms" );
-});
-```
-
 package.js:
 
 ```javascript
@@ -80,6 +53,33 @@ extend( Package.prototype, {
 });
 
 module.exports = Package;
+```
+
+   npm install node-packager
+
+```javascript
+var fs = require( "js" );
+var glob = require( "glob" );
+var extend = require( "util" )._extend;
+var Package = require( "./package" )
+var Packager = require( "node-packager" );
+
+var files = glob.sync( "+(LICENSE.txt|src/**)", { nodir: true } ).reduce(function( files, filepath ) {
+  files[ filepath ] = fs.readFileSync( filepath );
+  return files;
+}, {} );
+
+var pkg = Packager( files, Package, {
+  includeImages: true
+});
+var stream = fs.createWriteStream( "myapp.zip" );
+pkg.toZip( stream, function( error ) {
+  if ( error ) {
+    return console.error( error );
+  }
+  console.log( "Built myapp.zip (" + pkg.stats.toZip.size + " bytes) in " + pkg.stats.toZip.time + " ms" );
+  console.log( "- app.js took " + pkg.stats[ "app.js" ].time + " ms" );
+});
 ```
 
 ## API
