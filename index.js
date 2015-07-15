@@ -47,7 +47,7 @@ function Packager( files, Package, runtimeVars ) {
 	runtimeVars = runtimeVars || {};
 
 	this.pkg = pkg = new Package( files, runtimeVars );
-  this.stats = stats = {};
+	this.stats = stats = {};
 
 	assert( typeof pkg === "object", "Could not create Package instance" );
 
@@ -84,7 +84,7 @@ function Packager( files, Package, runtimeVars ) {
 					deferred.reject( error );
 				}
 			});
-		
+
 		// Sync function.
 		} else if ( type === "function" ) {
 			try {
@@ -97,7 +97,7 @@ function Packager( files, Package, runtimeVars ) {
 		// Unknown.
 		} else {
 			deferred.reject( new Error( "Invalid type `" + typeof method + "` for method `" + methodName + "`" ) );
-		
+
 		}
 
 		return deferred.promise;
