@@ -188,13 +188,14 @@ Packager.prototype.toZip = function( target, options, callback ) {
 		}
 
 		target.on( finishEvent, function() {
-			deferred.resolve();
-			stats.toZip = stats.toZip || {};
 			stats.toZip.size = zip.pointer();
-			callback( null );
+			deferred.resolve();
 		});
 
-		zip.on( "error", callback );
+		zip.on( "error", function( error ) {
+			deferred.reject( error );
+		});
+
 		zip.pipe( target );
 
 		Object.keys( files ).forEach(function( filepath ) {
@@ -204,6 +205,8 @@ Packager.prototype.toZip = function( target, options, callback ) {
 
 		zip.finalize();
 	}).catch( callback );
+
+	deferred.promise.nodeify( callback );
 };
 
 module.exports = Packager;
