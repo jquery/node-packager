@@ -34,8 +34,8 @@ function stopwatch( promise, stats, name ) {
 	});
 }
 
-function Packager( files, Package, runtimeVars ) {
-	var builtFiles, pkg, stats;
+function Packager( files, Package, runtimeVars, options ) {
+	var builtFiles, cached, cacheKey, pkg, stats;
 	var ready = Q.defer();
 
 	assert( typeof files === "object", "Must include files object" );
@@ -43,11 +43,37 @@ function Packager( files, Package, runtimeVars ) {
 	if ( runtimeVars !== undefined ) {
 		assert( typeof runtimeVars === "object", "Invalid runtimeVars type (object expected)" );
 	}
+	if ( runtimeVars !== undefined ) {
+		assert( typeof options === "object", "Invalid options type (object expected)" );
+	}
+
+	options = options || {};
+
+	// TODO: assert options.cache
 
 	runtimeVars = runtimeVars || {};
-
+	this.builtFiles = builtFiles = {};
 	this.pkg = pkg = new Package( files, runtimeVars );
+	this.ready = ready.promise;
 	this.stats = stats = {};
+
+	if ( options.cache ) {
+		cacheKey = Package.toString() +
+			Object.keys(Package.prototype).join() +
+			JSON.stringify( runtimeVars );
+
+		if ( cached = options.cache.get( cacheKey ) ) {
+			this.builtFiles = cached.builtFiles;
+			return ready.resolve();
+
+		} else {
+			this.ready.then(function() {
+				options.cache.set( cacheKey, {
+					builtFiles: builtFiles
+				});
+			});
+		}
+	}
 
 	assert( typeof pkg === "object", "Could not create Package instance" );
 
@@ -55,8 +81,6 @@ function Packager( files, Package, runtimeVars ) {
 	pkg.runtime = runtimeVars;
 
 	// Generate the build files (based on each Package method).
-	this.builtFiles = builtFiles = {};
-
 	Q.all( Object.keys( Package.prototype ).map(function( methodName ) {
 		var deferred = Q.defer();
 		var filepath = methodName;
@@ -108,8 +132,6 @@ function Packager( files, Package, runtimeVars ) {
 	}).catch(function( error ) {
 		ready.reject( error );
 	});
-
-	this.ready = ready.promise;
 }
 
 /**
