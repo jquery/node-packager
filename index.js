@@ -57,6 +57,8 @@ function Packager( files, Package, runtimeVars, options ) {
 	this.ready = ready.promise;
 	this.stats = stats = {};
 
+	stopwatch( ready.promise, stats, "build" );
+
 	if ( options.cache ) {
 		cacheKey = Package.toString() +
 			Object.keys(Package.prototype).join() +
