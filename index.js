@@ -43,7 +43,7 @@ function Packager( files, Package, runtimeVars, options ) {
 	if ( runtimeVars !== undefined ) {
 		assert( typeof runtimeVars === "object", "Invalid runtimeVars type (object expected)" );
 	}
-	if ( runtimeVars !== undefined ) {
+	if ( options !== undefined ) {
 		assert( typeof options === "object", "Invalid options type (object expected)" );
 	}
 
