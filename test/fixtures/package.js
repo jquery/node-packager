@@ -25,4 +25,4 @@ Package.prototype.null = function() {
 	return null;
 };
 
-module.exports = Package;
+export { Package };

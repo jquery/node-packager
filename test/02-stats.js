@@ -1,19 +1,23 @@
-var files;
-var Packager = require( "../index.js" );
-var expect = require( "chai" ).expect;
-var fs = require( "fs" );
-var Package = require( "./fixtures/package" );
+import fs from "node:fs";
+import path from "node:path";
+import { Writable } from "node:stream";
+import { fileURLToPath } from "node:url";
+import { expect } from "chai";
+import Packager from "../index.js";
+import { Package } from "./fixtures/package.js";
 
-files = {
-	"foo": fs.readFileSync( __dirname + "/fixtures/foo" ),
-	"bar": fs.readFileSync( __dirname + "/fixtures/bar" )
+const dirname = path.dirname( fileURLToPath( import.meta.url ) );
+
+const files = {
+	"foo": fs.readFileSync( dirname + "/fixtures/foo" ),
+	"bar": fs.readFileSync( dirname + "/fixtures/bar" )
 };
 
 describe( "Packager#stats", function() {
-	var pkg = new Packager( files, Package );
+	const pkg = new Packager( files, Package );
 
 	before(function( done ) {
-		var wstream = new require( "stream" ).Writable();
+		const wstream = new Writable();
 
 		wstream._write = function( chunk, encoding, done ) {
 			done();

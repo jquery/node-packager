@@ -2,9 +2,10 @@
   "name": "node-packager",
   "version": "0.0.6",
   "main": "index.js",
+  "type": "commonjs",
   "repository": {
     "type": "git",
-    "url": "git://github.com/rxaviers/node-packager.git"
+    "url": "https://github.com/rxaviers/node-packager.git"
   },
   "keywords": [
     "amd",
@@ -25,16 +26,16 @@
     }
   ],
   "dependencies": {
-    "archiver": "0.14.4",
-    "q": "1.1.2",
-    "requirejs-memfiles": ">2.1.15-0 <=2.1.15"
+    "archiver": "7.0.1"
   },
   "devDependencies": {
-    "chai": "1.10.x",
-    "jshint": "2.6.x",
-    "mocha": "2.1.0"
+    "chai": "5.1.0",
+    "eslint": "8.57.0",
+    "eslint-config-jquery": "3.0.2",
+    "globals": "15.0.0",
+    "mocha": "10.4.0"
   },
   "scripts": {
-    "test": "jshint index.js test/*.js && mocha"
+    "test": "eslint . && mocha"
   }
 }

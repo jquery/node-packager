@@ -1,11 +1,14 @@
-var files;
-var Packager = require( "../index.js" );
-var expect = require( "chai" ).expect;
-var fs = require( "fs" );
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { expect } from "chai";
+import Packager from "../index.js";
 
-files = {
-	"foo": fs.readFileSync( __dirname + "/fixtures/foo" ),
-	"bar": fs.readFileSync( __dirname + "/fixtures/bar" )
+const dirname = path.dirname( fileURLToPath( import.meta.url ) );
+
+var files = {
+	"foo": fs.readFileSync( dirname + "/fixtures/foo" ),
+	"bar": fs.readFileSync( dirname + "/fixtures/bar" )
 };
 
 describe( "Package", function() {
