@@ -13,9 +13,9 @@ function set( files, filepath, data ) {
 
 	// Object containing (subpath, data) key-value pairs.
 	} else if ( typeof data === "object" && data !== null ) {
-		Object.keys( data ).forEach(function( subpath ) {
+		Object.keys( data ).forEach( function( subpath ) {
 			set( files, path.join( filepath, subpath ), data[ subpath ] );
-		});
+		} );
 
 	// null
 	} else if ( data === null ) {
@@ -28,9 +28,9 @@ function set( files, filepath, data ) {
 function stopwatch( promise, stats, name ) {
 	var start = new Date();
 	stats[ name ] = stats[ name ] || {};
-	promise.then(function() {
+	promise.then( function() {
 		stats[ name ].time = new Date() - start;
-	});
+	} );
 }
 
 function Packager( files, Package, runtimeVars, options ) {
@@ -64,7 +64,7 @@ function Packager( files, Package, runtimeVars, options ) {
 
 	if ( options.cache ) {
 		cacheKey = Package.toString() +
-			Object.keys(Package.prototype).join() +
+			Object.keys( Package.prototype ).join() +
 			JSON.stringify( runtimeVars );
 
 		if ( cached = options.cache.get( cacheKey ) ) {
@@ -72,11 +72,11 @@ function Packager( files, Package, runtimeVars, options ) {
 			return resolveReady();
 
 		} else {
-			this.ready.then(function() {
+			this.ready.then( function() {
 				options.cache.set( cacheKey, {
 					builtFiles: builtFiles
-				});
-			});
+				} );
+			} );
 		}
 	}
 
@@ -86,7 +86,7 @@ function Packager( files, Package, runtimeVars, options ) {
 	pkg.runtime = runtimeVars;
 
 	// Generate the build files (based on each Package method).
-	Promise.all( Object.keys( Package.prototype ).map(function( methodName ) {
+	Promise.all( Object.keys( Package.prototype ).map( function( methodName ) {
 		var resolveInner, rejectInner;
 
 		const innerPromise = new Promise( ( resolve, reject ) => {
@@ -108,24 +108,24 @@ function Packager( files, Package, runtimeVars, options ) {
 
 		// Async function.
 		} else if ( type === "function" && method.length ) {
-			pkg[ methodName ](function( error, data ) {
+			pkg[ methodName ]( function( error, data ) {
 				if ( error ) {
 					return rejectInner( error );
 				}
 				try {
 					set( builtFiles, filepath, data );
 					resolveInner();
-				} catch( error ) {
+				} catch ( error ) {
 					rejectInner( error );
 				}
-			});
+			} );
 
 		// Sync function.
 		} else if ( type === "function" ) {
 			try {
 				set( builtFiles, filepath, pkg[ methodName ]() );
 				resolveInner();
-			} catch( error ) {
+			} catch ( error ) {
 				rejectInner( error );
 			}
 
@@ -137,12 +137,12 @@ function Packager( files, Package, runtimeVars, options ) {
 
 		return innerPromise;
 
-	})).then(function() {
+	} ) ).then( function() {
 		resolveReady();
 
-	}).catch(function( error ) {
+	} ).catch( function( error ) {
 		rejectReady( error );
-	});
+	} );
 }
 
 /**
@@ -152,9 +152,9 @@ function Packager( files, Package, runtimeVars, options ) {
  */
 Packager.prototype.toJson = function( callback ) {
 	var files = this.builtFiles;
-	this.ready.then(function() {
+	this.ready.then( function() {
 		callback( null, files );
-	}).catch( callback );
+	} ).catch( callback );
 };
 
 /**
@@ -177,12 +177,12 @@ Packager.prototype.toZip = function( target, options, callback ) {
 			options = {};
 		}
 
-		this.ready.then(function() {
+		this.ready.then( function() {
 			var finishEvent = "finish",
 				zip = archiver( "zip" );
 
 			if ( options.basedir ) {
-				files = Object.keys( files ).reduce(function( _files, filepath ) {
+				files = Object.keys( files ).reduce( function( _files, filepath ) {
 					_files[ path.join( options.basedir, filepath ) ] = files[ filepath ];
 					return _files;
 				}, {} );
@@ -201,29 +201,29 @@ Packager.prototype.toZip = function( target, options, callback ) {
 			target.on( finishEvent, function() {
 				stats.toZip.size = zip.pointer();
 				resolveToZip();
-			});
+			} );
 
 			zip.on( "error", function( error ) {
 				rejectToZip( error );
-			});
+			} );
 
 			zip.pipe( target );
 
-			Object.keys( files ).forEach(function( filepath ) {
+			Object.keys( files ).forEach( function( filepath ) {
 				var data = files[ filepath ] || "";
 				zip.append( data, { name: filepath } );
-			});
+			} );
 
 			zip.finalize();
-		}).catch( callback );
+		} ).catch( callback );
 	} );
 
 	toZipPromise
 		.then( ( result ) => {
-			callback( null, result )
+			callback( null, result );
 		} )
 		.catch( ( error ) => {
-			callback( error )
+			callback( error );
 		} );
 };
 

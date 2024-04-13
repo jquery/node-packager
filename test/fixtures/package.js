@@ -9,9 +9,9 @@ Package.prototype.sync = function() {
 
 Package.prototype.async = function( callback ) {
 	var files = this.files;
-	setTimeout(function() {
+	setTimeout( function() {
 		callback( null, files.foo.toString( "utf-8" ) + files.bar.toString( "utf-8" ) );
-	}, 100);
+	}, 100 );
 };
 
 Package.prototype.multiple = function() {
