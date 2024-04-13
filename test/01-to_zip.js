@@ -20,7 +20,7 @@ describe( "Packager#toZip()", function() {
 		let somethingWritten = false;
 		const wstream = new Writable();
 
-		wstream._write = function( chunk, encoding, done ) {
+		wstream._write = function( chunk, _encoding, done ) {
 			expect( chunk ).to.be.instanceof( Buffer );
 			somethingWritten = true;
 			done();

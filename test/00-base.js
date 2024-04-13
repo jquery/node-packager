@@ -83,7 +83,8 @@ describe( "Package", function() {
 			} );
 		} );
 
-		describe( "Returning an Object containing (subpath, data) key-value pairs for expanding an entrypoint into multiple files", function() {
+		describe( "Returning an Object containing (subpath, data) key-value pairs " +
+			"for expanding an entrypoint into multiple files", function() {
 			var builtFiles;
 			function Package() {}
 			Package.prototype.output = function() {
@@ -210,7 +211,8 @@ describe( "Package", function() {
 			} );
 		} );
 
-		describe( "Returning an Object containing (subpath, data) key-value pairs for expanding an entrypoint into multiple files", function() {
+		describe( "Returning an Object containing (subpath, data) key-value pairs " +
+			"for expanding an entrypoint into multiple files", function() {
 			var builtFiles;
 			function Package() {}
 			Package.prototype.output = function( callback ) {

@@ -21,7 +21,8 @@ function set( files, filepath, data ) {
 	} else if ( data === null ) {
 		return;
 	} else {
-		throw new Error( "Invalid type `" + typeof data + "` for `" + filepath + "` (String, Buffer or Object expected)." );
+		throw new Error( "Invalid type `" + typeof data +
+			"` for `" + filepath + "` (String, Buffer or Object expected)." );
 	}
 }
 
@@ -67,7 +68,9 @@ function Packager( files, Package, runtimeVars, options ) {
 			Object.keys( Package.prototype ).join() +
 			JSON.stringify( runtimeVars );
 
-		if ( cached = options.cache.get( cacheKey ) ) {
+		cached = options.cache.get( cacheKey );
+
+		if ( cached ) {
 			this.builtFiles = cached.builtFiles;
 			return resolveReady();
 
@@ -131,7 +134,8 @@ function Packager( files, Package, runtimeVars, options ) {
 
 		// Unknown.
 		} else {
-			rejectInner( new Error( "Invalid type `" + typeof method + "` for method `" + methodName + "`" ) );
+			rejectInner( new Error( "Invalid type `" + typeof method +
+				"` for method `" + methodName + "`" ) );
 
 		}
 

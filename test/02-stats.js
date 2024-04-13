@@ -19,7 +19,7 @@ describe( "Packager#stats", function() {
 	before( function( done ) {
 		const wstream = new Writable();
 
-		wstream._write = function( chunk, encoding, done ) {
+		wstream._write = function( _chunk, _encoding, done ) {
 			done();
 		};
 
