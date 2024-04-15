@@ -1,10 +1,9 @@
-var archiver = require( "archiver" );
-var assert = require( "assert" );
-var fs = require( "fs" );
-var path = require( "path" );
-var Q = require( "q" );
+"use strict";
 
-Q.longStackSupport = true;
+var archiver = require( "archiver" );
+var assert = require( "node:assert" );
+var fs = require( "node:fs" );
+var path = require( "node:path" );
 
 function set( files, filepath, data ) {
 
@@ -14,29 +13,34 @@ function set( files, filepath, data ) {
 
 	// Object containing (subpath, data) key-value pairs.
 	} else if ( typeof data === "object" && data !== null ) {
-		Object.keys( data ).forEach(function( subpath ) {
+		Object.keys( data ).forEach( function( subpath ) {
 			set( files, path.join( filepath, subpath ), data[ subpath ] );
-		});
+		} );
 
 	// null
 	} else if ( data === null ) {
 		return;
 	} else {
-		throw new Error( "Invalid type `" + typeof data + "` for `" + filepath + "` (String, Buffer or Object expected)." );
+		throw new Error( "Invalid type `" + typeof data +
+			"` for `" + filepath + "` (String, Buffer or Object expected)." );
 	}
 }
 
 function stopwatch( promise, stats, name ) {
 	var start = new Date();
 	stats[ name ] = stats[ name ] || {};
-	promise.then(function() {
+	promise.then( function() {
 		stats[ name ].time = new Date() - start;
-	});
+	} );
 }
 
 function Packager( files, Package, runtimeVars, options ) {
-	var builtFiles, cached, cacheKey, pkg, stats;
-	var ready = Q.defer();
+	var builtFiles, cached, cacheKey, pkg, stats, resolveReady, rejectReady;
+
+	const ready = new Promise( ( resolve, reject ) => {
+		resolveReady = resolve;
+		rejectReady = reject;
+	} );
 
 	assert( typeof files === "object", "Must include files object" );
 	assert( typeof Package === "function", "Must include Package class" );
@@ -54,26 +58,28 @@ function Packager( files, Package, runtimeVars, options ) {
 	runtimeVars = runtimeVars || {};
 	this.builtFiles = builtFiles = {};
 	this.pkg = pkg = new Package( files, runtimeVars );
-	this.ready = ready.promise;
+	this.ready = ready;
 	this.stats = stats = {};
 
-	stopwatch( ready.promise, stats, "build" );
+	stopwatch( ready, stats, "build" );
 
 	if ( options.cache ) {
 		cacheKey = Package.toString() +
-			Object.keys(Package.prototype).join() +
+			Object.keys( Package.prototype ).join() +
 			JSON.stringify( runtimeVars );
 
-		if ( cached = options.cache.get( cacheKey ) ) {
+		cached = options.cache.get( cacheKey );
+
+		if ( cached ) {
 			this.builtFiles = cached.builtFiles;
-			return ready.resolve();
+			return resolveReady();
 
 		} else {
-			this.ready.then(function() {
+			this.ready.then( function() {
 				options.cache.set( cacheKey, {
 					builtFiles: builtFiles
-				});
-			});
+				} );
+			} );
 		}
 	}
 
@@ -83,57 +89,64 @@ function Packager( files, Package, runtimeVars, options ) {
 	pkg.runtime = runtimeVars;
 
 	// Generate the build files (based on each Package method).
-	Q.all( Object.keys( Package.prototype ).map(function( methodName ) {
-		var deferred = Q.defer();
+	Promise.all( Object.keys( Package.prototype ).map( function( methodName ) {
+		var resolveInner, rejectInner;
+
+		const innerPromise = new Promise( ( resolve, reject ) => {
+			resolveInner = resolve;
+			rejectInner = reject;
+		} );
+
 		var filepath = methodName;
 		var method = pkg[ methodName ];
 
 		var type = typeof method;
 
-		stopwatch( deferred.promise, stats, filepath );
+		stopwatch( innerPromise, stats, filepath );
 
 		// String (builtFile is a shallow copy of file whose path has been passed).
 		if ( type === "string" ) {
 			builtFiles[ filepath ] = files[ method ];
-			deferred.resolve();
+			resolveInner();
 
 		// Async function.
 		} else if ( type === "function" && method.length ) {
-			pkg[ methodName ](function( error, data ) {
+			pkg[ methodName ]( function( error, data ) {
 				if ( error ) {
-					return deferred.reject( error );
+					return rejectInner( error );
 				}
 				try {
 					set( builtFiles, filepath, data );
-					deferred.resolve();
-				} catch( error ) {
-					deferred.reject( error );
+					resolveInner();
+				} catch ( error ) {
+					rejectInner( error );
 				}
-			});
+			} );
 
 		// Sync function.
 		} else if ( type === "function" ) {
 			try {
 				set( builtFiles, filepath, pkg[ methodName ]() );
-				deferred.resolve();
-			} catch( error ) {
-				deferred.reject( error );
+				resolveInner();
+			} catch ( error ) {
+				rejectInner( error );
 			}
 
 		// Unknown.
 		} else {
-			deferred.reject( new Error( "Invalid type `" + typeof method + "` for method `" + methodName + "`" ) );
+			rejectInner( new Error( "Invalid type `" + typeof method +
+				"` for method `" + methodName + "`" ) );
 
 		}
 
-		return deferred.promise;
+		return innerPromise;
 
-	})).then(function() {
-		ready.resolve();
+	} ) ).then( function() {
+		resolveReady();
 
-	}).catch(function( error ) {
-		ready.reject( error );
-	});
+	} ).catch( function( error ) {
+		rejectReady( error );
+	} );
 }
 
 /**
@@ -143,9 +156,9 @@ function Packager( files, Package, runtimeVars, options ) {
  */
 Packager.prototype.toJson = function( callback ) {
 	var files = this.builtFiles;
-	this.ready.then(function() {
+	this.ready.then( function() {
 		callback( null, files );
-	}).catch( callback );
+	} ).catch( callback );
 };
 
 /**
@@ -159,56 +172,63 @@ Packager.prototype.toJson = function( callback ) {
  * @callback( error ) [ Function ]: callback function.
  */
 Packager.prototype.toZip = function( target, options, callback ) {
-	var deferred = Q.defer();
-	var files = this.builtFiles;
-	var stats = this.stats;
+	const toZipPromise = new Promise( ( resolveToZip, rejectToZip ) => {
+		var files = this.builtFiles;
+		var stats = this.stats;
 
-	if ( arguments.length === 2 ) {
-		callback = options;
-		options = {};
-	}
-
-	this.ready.then(function() {
-		var finishEvent = "finish",
-			zip = archiver( "zip" );
-
-		if ( options.basedir ) {
-			files = Object.keys( files ).reduce(function( _files, filepath ) {
-				_files[ path.join( options.basedir, filepath ) ] = files[ filepath ];
-				return _files;
-			}, {} );
+		if ( arguments.length === 2 ) {
+			callback = options;
+			options = {};
 		}
 
-		stopwatch( deferred.promise, stats, "toZip" );
+		this.ready.then( function() {
+			var finishEvent = "finish",
+				zip = archiver( "zip" );
 
-		if ( typeof target === "string" ) {
-			target = fs.createWriteStream( target );
-		}
+			if ( options.basedir ) {
+				files = Object.keys( files ).reduce( function( _files, filepath ) {
+					_files[ path.join( options.basedir, filepath ) ] = files[ filepath ];
+					return _files;
+				}, {} );
+			}
 
-		if ( typeof target.fd !== "undefined" ) {
-			finishEvent = "close";
-		}
+			stopwatch( toZipPromise, stats, "toZip" );
 
-		target.on( finishEvent, function() {
-			stats.toZip.size = zip.pointer();
-			deferred.resolve();
-		});
+			if ( typeof target === "string" ) {
+				target = fs.createWriteStream( target );
+			}
 
-		zip.on( "error", function( error ) {
-			deferred.reject( error );
-		});
+			if ( typeof target.fd !== "undefined" ) {
+				finishEvent = "close";
+			}
 
-		zip.pipe( target );
+			target.on( finishEvent, function() {
+				stats.toZip.size = zip.pointer();
+				resolveToZip();
+			} );
 
-		Object.keys( files ).forEach(function( filepath ) {
-			var data = files[ filepath ] || "";
-			zip.append( data, { name: filepath } );
-		});
+			zip.on( "error", function( error ) {
+				rejectToZip( error );
+			} );
 
-		zip.finalize();
-	}).catch( callback );
+			zip.pipe( target );
 
-	deferred.promise.nodeify( callback );
+			Object.keys( files ).forEach( function( filepath ) {
+				var data = files[ filepath ] || "";
+				zip.append( data, { name: filepath } );
+			} );
+
+			zip.finalize();
+		} ).catch( callback );
+	} );
+
+	toZipPromise
+		.then( ( result ) => {
+			callback( null, result );
+		} )
+		.catch( ( error ) => {
+			callback( error );
+		} );
 };
 
 module.exports = Packager;
