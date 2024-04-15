@@ -5,7 +5,7 @@
 	"type": "commonjs",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/rxaviers/node-packager.git"
+		"url": "git+https://github.com/jquery/node-packager.git"
 	},
 	"keywords": [
 		"amd",
